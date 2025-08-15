@@ -3,7 +3,7 @@ I’m running this in a kind cluster on WSL, with Docker Desktop on Windows 11 a
 
 # Running the project
 - `docker build -t app .`
-- If running under `kind`: `kind load docker-image`
+- If running under `kind`: `kind load docker-image app`
 - `kubectl apply -k k8s/`
 
 # Adjustments
