@@ -16,12 +16,11 @@ A simple Go application that writes to PostgreSQL and exposes Prometheus metrics
 # Build the Docker image
 docker build -t app .
 
-# Load image to kind
-kind load docker-image .
+# Load image to kind (if using kind)
+kind load docker-image app
 
 # Deploy to Kubernetes
-kubectl apply -f k8s/postgresql.yaml
-kubectl apply -f k8s/app.yaml
+kubectl apply -k k8s/
 ```
 
 ## Metrics

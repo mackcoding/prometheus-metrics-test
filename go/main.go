@@ -62,7 +62,7 @@ func main() {
 		if rand.Intn(100) < 10 {
 			simulateDatabaseError(dbConfig.Name)
 		} else {
-			addNewRow(db)
+			addNewRow(db, dbConfig.Name)
 		}
 	}
 }
@@ -105,9 +105,9 @@ func connectToDatabase(config *DBConfig) *sql.DB {
 
 func bootstrapDb(db *sql.DB) error {
 	newTableSql := `
-		CREATE TABLE IF NOT EXISTS devdb (
+		CREATE TABLE IF NOT EXISTS devtable (
 			id SERIAL PRIMARY KEY,
-			timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			data TEXT DEFAULT ''
 		)
 	`
@@ -120,9 +120,9 @@ func bootstrapDb(db *sql.DB) error {
 	return nil
 }
 
-func addNewRow(db *sql.DB) {
+func addNewRow(db *sql.DB, dbname string) {
 	insertRowSql := `
-		INSERT INTO devdb (data) VALUES ($1)
+		INSERT INTO devtable (data) VALUES ($1)
 	`
 
 	log.Println("Adding row")
@@ -132,10 +132,10 @@ func addNewRow(db *sql.DB) {
 
 	if err != nil {
 		log.Println("Failed to add new row:", err)
-		failureWrites.WithLabelValues("devdb").Inc()
+		failureWrites.WithLabelValues(dbname).Inc()
 	} else {
 		log.Println("New row added.")
-		successfulWrites.WithLabelValues("devdb").Inc()
+		successfulWrites.WithLabelValues(dbname).Inc()
 	}
 }
 
@@ -166,10 +166,10 @@ func getConnString(config *DBConfig) string {
 }
 
 func getEnv(name string, defaultValue string) string {
-	value := os.Getenv(name)
+	value, exists := os.LookupEnv(name)
 
-	if value == "" {
-		value = defaultValue
+	if !exists {
+		return defaultValue
 	}
 
 	return value
