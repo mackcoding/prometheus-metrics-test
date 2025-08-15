@@ -22,6 +22,7 @@ var (
 		},
 		[]string{"dbname"},
 	)
+
 	failureWrites = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "postgres_write_errors_total",
